@@ -16,5 +16,15 @@ export default defineType({
       type: 'image',
       title: 'Image of Category', 
     }),
+    defineField({
+      name: 'heading',
+      title: 'Heading',
+      type: 'string',
+    }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'string',
+    }),
   ],
 })

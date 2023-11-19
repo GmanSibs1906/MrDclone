@@ -1,21 +1,22 @@
 import { View, Text, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import CategoryCard from './CategoryCard'
 import sanityClient from "../sanity";
+import PopularCard from './PopularCard';
 
-const Categorys = () => {
+const Popular = () => {
 
-  const [options, setOption] = useState([])
+  const [popular, setPopular] = useState([])
 
   useEffect(()=>{
     sanityClient.fetch(`
-    *[_type == "options"]{
+    *[_type == "popular"]{
       ...,
     }
     `).then(data => {
-      setOption(data);
+      setPopular(data);
     })
   },[])
+
 
   return (
     <ScrollView 
@@ -28,17 +29,16 @@ const Categorys = () => {
     >
 
     {/* CategoryCard */}
-    {options.map((option)=> (
-       <CategoryCard 
-       key = {option.id}
+    {/* {popular.map((option)=> (
+       <PopularCard 
        imgSrc={option.image} 
        title={option.name}
      />
-    ))}
+    ))} */}
    
 
     </ScrollView>
   )
 }
 
-export default Categorys
+export default Popular

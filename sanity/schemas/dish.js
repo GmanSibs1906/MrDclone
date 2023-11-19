@@ -28,5 +28,13 @@ export default defineType({
       type: 'image',
       validation: (Rule) => Rule.required(),
     },
+    {
+      name: 'rating',
+      type: 'number',
+      title: 'Enter a Rating from (1-5 Stars)',
+      validation: (Rule) => 
+        Rule.min(1)
+          .max(5)
+    },
   ],
 })

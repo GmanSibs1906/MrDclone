@@ -6,20 +6,54 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import React, { useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { MapPinIcon, MagnifyingGlassIcon, AdjustmentsVerticalIcon } from "react-native-heroicons/solid";
 import Categorys from "../components/Categorys";
 import FeaturedRow from "../components/FeaturedRow";
+import sanityClient from "../sanity";
+import featured from "../sanity/schemas/featured";
+import CategoryBanner from "../components/CategoryBanner";
+import PopularBrands from "../components/PopularBrands";
+import MenuItems from "../components/MenuItems";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const [featuredCategories, setFeaturedCategories] = useState([])
+  const [categories, setCategories] = useState([])
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, []);
+
+  useEffect(()=>{
+    sanityClient.fetch(`
+    *[_type == "featured"]{
+      ...,
+      restaurants[]->{
+        ...,
+        dishes[]->,
+      },
+    }
+    `).then(data => {
+      setFeaturedCategories(data);
+    })
+  },[])
+
+  useEffect(()=>{
+    sanityClient.fetch(`
+    *[_type == "category"]{
+      ...,
+    }
+    `).then(data => {
+      setCategories(data);
+    })
+  },[])
+
+
+
   return (
     <SafeAreaView className=" bg-gray-200 ">
       {/* Header */}
@@ -32,38 +66,20 @@ const HomeScreen = () => {
         </View>
       </View>
 
-      {/* User bar */}
-      <View className=" bg-[#ffffff] flex-row my-2 ">
-        <View>
+    {/* User banner */}
+      <View className=" relative ">
+        <Image source={require("../assets/images/graphic.png")} 
+          className=" h-[80px] opacity-20 "
+        />
+        <View className=" absolute p-[10px] flex flex-row ">
         <Image
-          source={require("../assets/images/logo-white.png")}
-          className=" h-[50px] w-[50px] ml-2"
-        />
-         <Image
-          source={require("../assets/images/logoD.png")}
-          className=" h-[30px] w-[30px] ml-5"
-        />
-        </View>
-       
-        <Image
-          source={require("../assets/images/wallet.png")}
-          className=" h-[80.0px] w-[130.0px] mr-2 my-2"
-        />
-        <View className=" flex-1 justify-center items-center mr-[20px]">
-          <View className=" flex-row items-center ">
-            <Text className=" text-[18px] text-gray-500 ml-[15px] font-light ">Wallet : </Text>
-            <Text className=" font-bold text-[18px] text-[#37ccd6] ">R345.00</Text>
-          </View>
-          <View className=" flex-row ">
-            <Text className=" text-[18px] text-gray-500 font-light ">Points : </Text>
-            <Text className=" font-bold text-[18px] text-[#fd712b] ">R41.00</Text>
-          </View>
-        </View>
-        <View className=" flex-row flex-1 justify-end items-center mr-4">
-          <Image
             source={require("../assets/images/user.jpg")}
             className=" h-[60px] w-[60px] bg-gray-300 p-4 rounded-full"
           />
+          <View className="  ">
+          <Text className=" font-bold text-[10px] p-[2px] w-[123px] text-[#4aeaf6] bg-[#7b7b7b] ml-[20px] mt-[10px] italic ">The only app you need</Text>
+          <Text className=" font-bold text-[25px] ml-[20px] italic ">Welcome Gman</Text>
+          </View>
         </View>
       </View>
 
@@ -80,30 +96,45 @@ const HomeScreen = () => {
       </View>
 
       {/* Body */}
-      <ScrollView>
+      <ScrollView className=" mb-[270px] ">
+
         {/* Categories */}
         <Categorys />
+        <ScrollView
+        horizontal 
+        contentContainerStyle={{
+          paddingHorizontal: 15,
+        }}
+        showsHorizontalScrollIndicator={false}
+        className="pt-4"
+      >
+        {categories?.map((item)=>(
+          <CategoryBanner key={item._id} id={item._id} title={item.name} description={item.description} image={item.image} heading={item.heading} /> 
+        ))}
+      </ScrollView>
+
+      {/* Popular Brands */}
+      <View className=" mt-[40px] px-[20px] mb-[20px] ">
+      <Text className=" font-bold text-[25px] mb-[5px] ">Popular Brands</Text>
+      <PopularBrands />
+      </View>
+     
+
+         
 
         {/* Featured Rows */}
-        <FeaturedRow
-        id="123"
-          title="Featured"
-          description="Paid placements from our partners"
-        /> 
 
-        {/* Tasty Discounts */}
-        <FeaturedRow
-        id="1234"
-          title="Tasty discounts"
-          description="Paid placements from our partners"
-        /> 
+        {featuredCategories?.map((item)=>(
+          <FeaturedRow key={item._id} id={item._id} title={item.name} description={item.short_description} /> 
+        ))}
 
-        {/* Offers near you */}
-        <FeaturedRow
-        id="12345"
-          title="Offers near you!"
-          description="Paid placements from our partners"
-        /> 
+        {/* Menu Items */}
+        <View className=" my-[25px] px-[20px] ">
+        <Text className=" font-bold text-[25px] mb-[5px] ">Menu Items</Text>
+        <MenuItems />
+        </View>
+        
+
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,18 +1,18 @@
 export default {
-    name: 'featured',
+    name: 'popular',
     type: 'document',
-    title: 'Featured Menu categories',
+    title: 'Popular Brands',
     fields:[
         {
             name: 'name',
             type: 'string',
-            title: 'Featured categories name',
+            title: 'Brand name',
             validation: (Rule) => Rule.required(),
           },
           {
-            name: 'short_description',
-            type: 'string',
-            title: 'Short description',
+            name: 'image',
+            title: 'Image of the Brand',
+            type: 'image',
             validation: (Rule) => Rule.required(),
           },
           {
